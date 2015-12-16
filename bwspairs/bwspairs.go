@@ -15,44 +15,45 @@ func check(e error) {
 	}
 }
 
-func pairArraySum(items []int) int {
+func findMaxPairSum(items []int) int {
+
 	sort.Ints(items)
 
 	sum, prev := 0, 0
 
-	pivot := sort.SearchInts(items, 2)
+	var positives []int
 
-	for _, cur := range items[:pivot] {
-		switch {
-		case cur < 0:
-			if prev != 0 {
+	for i, cur := range items {
+
+		if cur < 0 {
+			if prev == 0 {
+				prev = cur
+			} else {
 				sum += prev * cur
 				prev = 0
-			} else {
-				prev = cur
 			}
-		case cur == 0:
+		} else if cur == 0 {
 			prev = 0
-		case cur == 1:
+		} else if cur == 1 {
 			sum += 1
+		} else {
+			positives = items[i:]
+			break
 		}
 	}
+
 	sum += prev
 	prev = 0
 
-	items = items[pivot:]
-
-	for i := len(items) - 1; i >= 0; i-- {
+	for i := len(positives) - 1; i >= 0; i-- {
 		if prev != 0 {
-			sum += prev * items[i]
+			sum += prev * positives[i]
 			prev = 0
 		} else {
-			prev = items[i]
+			prev = positives[i]
 		}
 	}
-	sum += prev
-
-	return sum
+	return sum + prev
 }
 
 func parseFile(fileName string) []int {
@@ -75,7 +76,7 @@ func parseFile(fileName string) []int {
 
 func processFile(fileName string) int {
 	items := parseFile(fileName)
-	return pairArraySum(items)
+	return findMaxPairSum(items)
 }
 
 func main() {
